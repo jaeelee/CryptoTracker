@@ -1,7 +1,12 @@
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle, ThemeProvider } from "styled-components";
 import Routers from "./Routers";
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { HelmetProvider } from "react-helmet-async";
+import { darkTheme, lightTheme } from "./theme";
+import { useState } from "react";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "./atoms";
+
 // createGlobalStyle : 렌더링 될 때  컴포넌트는 전역 스코프에 스타일을 올려줌
 // 전체 도큐먼트에 스타일이 적용됨
 // 도큐먼트의 헤드에 스타일을 주입
@@ -69,13 +74,16 @@ a{
 }
 `
 function App() {
+  const isDark = useRecoilValue(isDarkAtom);
   return (
     <>
-      <GlobalStyle />
-      <HelmetProvider>
-        <Routers></Routers>
-      </HelmetProvider>
-      <ReactQueryDevtools initialIsOpen={true} />
+      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+        <GlobalStyle />
+        <HelmetProvider>
+          <Routers></Routers>
+        </HelmetProvider>
+        <ReactQueryDevtools initialIsOpen={true} />
+      </ThemeProvider>
     </>
   );
 }

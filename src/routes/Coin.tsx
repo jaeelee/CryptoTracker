@@ -4,6 +4,9 @@ import { Link, Outlet, useLocation, useParams, useMatch } from "react-router-dom
 import styled from "styled-components";
 import { fetchCoinInfo, fetchCoinTicker } from "../api";
 import { Helmet } from "react-helmet-async";
+import { useSetRecoilState } from "recoil";
+import { isDarkAtom } from "../atoms";
+import ThemeToggle from "../ToggleBtn";
 
 const Conatiner = styled.div`
 padding:0px 20px;
@@ -13,8 +16,22 @@ max-width: 480px;
 const Header = styled.header`
 height:15vh;
 display:flex;
-justify-content: center;
+justify-content: space-between;
 align-items: center;
+color:${(props) => props.theme.accentColor};
+a{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    font-size: 18px;
+}
+div{
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+}
 `;
 const Title = styled.h1`
 font-size: 48px;
@@ -27,7 +44,7 @@ display: block;
 const Overview = styled.div`
    display: flex;
    justify-content: space-around;
-   background-color: rgba(0, 0, 0, 0.5);
+   background-color: ${(props) => props.theme.cardColor};
    padding: 10px 20px;
    border-radius: 10px;
  `;
@@ -59,7 +76,7 @@ text-transform: uppercase;
 font-size: 16px;
 font-weight: 400;
 /* background-color: rgba(0,0,0,0.5); */
-background-color: ${(props) => props.isActive ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.3)"};
+background-color: ${(props) => props.isActive ? props.theme.cardColor : props.theme.inactiveColor};
 /* padding: 7px 0px; */
 border-radius: 10px;
 /* color: ${(props) => props.isActive ? props.theme.accentColor : props.theme.textColor}; */
@@ -130,6 +147,8 @@ interface IPriceData {
 }
 
 function Coin() {
+    const setDarkAtom = useSetRecoilState(isDarkAtom);
+    const toggleDarkAtom = () => setDarkAtom((prev) => !prev);
     // react-router-dom v6 useLocation에 타입 지정
     const state = useLocation().state as IRouteState;
     const priceMatch = useMatch("/:coinId/price");;
@@ -167,7 +186,13 @@ function Coin() {
             <Helmet><title>{state?.name ? state?.name : loading ? "loading..." : infoData?.name}</title></Helmet>
 
             <Header>
-                <Title>{state?.name ? state?.name : loading ? "loading..." : infoData?.name}</Title>
+                <div><Link to="/">Home</Link></div>
+                <div>
+                    <Title>{state?.name ? state?.name : loading ? "loading..." : infoData?.name}</Title>
+                </div>
+                <div>
+                    <ThemeToggle toggle={toggleDarkAtom}>toggle</ThemeToggle>
+                </div>
             </Header>
             {loading ? (
                 <Loader>loading...</Loader>
@@ -206,7 +231,7 @@ function Coin() {
                             <Link to={`/${coinId}/price`}>Price</Link>
                         </Tab>
                     </Tabs>
-                    <Outlet context={{ coinId }} />
+                    <Outlet context={{ coinId, tickersData }} />
                     {/* <Routes>
                         <Route path="/price" element={<Price />} />
                         <Route path="/chart" element={<Chart />} />

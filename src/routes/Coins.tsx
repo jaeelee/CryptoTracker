@@ -2,8 +2,11 @@
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { fetchCoins } from "../api";
+import { isDarkAtom } from "../atoms";
+import ThemeToggle from "../ToggleBtn";
 
 const Conatiner = styled.div`
 padding:0px 20px;
@@ -14,15 +17,21 @@ max-width: 480px;
 const Header = styled.header`
 height:15vh;
 display:flex;
-justify-content: center;
+justify-content: space-between;
 align-items: center;
+div{
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+}
 `;
 
 const CoinsList = styled.ul``;
 
 const Coin = styled.li`
-background-color:white;
-color:${(props) => props.theme.bgColor};
+background-color:${(props) => props.theme.cardColor};
+color:${(props) => props.theme.textColor};
 margin-bottom: 10px;
 border-radius: 15px;
 a{
@@ -65,6 +74,9 @@ interface ICoin {
 }
 
 function Coins() {
+    // atom 값 설정 hook
+    const setDarkAtom = useSetRecoilState(isDarkAtom);
+    const toggleDarkAtom = () => setDarkAtom((prev) => !prev);
     // react-query 사용하기
     // useQuery(queryKey, fetch함수)
     // queryKey : query의 고유 식별자
@@ -87,7 +99,9 @@ function Coins() {
                 <title>Coins</title>
             </Helmet>
             <Header>
-                <Title>Coins</Title>
+                <div></div>
+                <div><Title>Coins</Title></div>
+                <div><ThemeToggle toggle={toggleDarkAtom}>toggle</ThemeToggle></div>
             </Header>
             {isLoading ? (
                 <Loader>loading...</Loader>

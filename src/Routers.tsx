@@ -1,9 +1,13 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from "react-router-dom";
+import styled from "styled-components";
 import Chart from "./routes/Chart";
 import Coin from "./routes/Coin";
 import Coins from "./routes/Coins";
 import Price from "./routes/Price";
 
+interface IRouterProps {
+    toggle: () => void;
+}
 function Routers() {
     return (
         <Router basename={process.env.PUBLIC_URL}>

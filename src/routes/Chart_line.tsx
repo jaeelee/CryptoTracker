@@ -2,8 +2,6 @@ import { useQuery } from "react-query";
 import { useOutletContext } from "react-router-dom";
 import { fetchCoinHistory } from "../api";
 import ApexChart from "react-apexcharts";
-import { useRecoilValue } from "recoil";
-import { isDarkAtom } from "../atoms";
 
 interface ChartProps {
     coinId: string;
@@ -20,8 +18,7 @@ interface IHistorical {
     market_cap: number;
 }
 
-function Chart() {
-    const isDark = useRecoilValue(isDarkAtom);
+function ChartLine() {
     const { coinId } = useOutletContext<ChartProps>();
     const { isLoading, data } = useQuery<IHistorical[]>(["ohlcv", coinId], () => fetchCoinHistory(coinId),
         { refetchInterval: 5000, });
@@ -32,17 +29,11 @@ function Chart() {
                 isLoading ? ("Loading..."
                 ) : (
                     <ApexChart
-                        type="candlestick"
+                        type="line"
                         series={[
                             {
                                 name: "Price",
-                                data: data?.map((price) => {
-                                    return [Date.parse(price.time_open),
-                                    price.open.toFixed(2),
-                                    price.high.toFixed(2),
-                                    price.low.toFixed(2),
-                                    price.close.toFixed(2)];
-                                }) as []
+                                data: data?.map((price) => price.close) as number[], // data를 못읽어 오는 경우 undefind가 되서 오류가 발생 -> as를 이용해 데이터가 number배열임을 강제
                             }
                         ]}
                         options={{
@@ -51,12 +42,16 @@ function Chart() {
                             },
                             xaxis: {
                                 type: "datetime",
+                                categories: data?.map((price) => price.time_close),
                                 labels: {
                                     show: false,
                                 },
+                                axisTicks: {
+                                    show: false,
+                                }
                             },
                             theme: {
-                                mode: isDark ? "dark" : "light",
+                                mode: "dark",
                             },
                             chart: {
                                 background: "transparent",
@@ -66,9 +61,15 @@ function Chart() {
                                     show: false,
                                 },
                             },
+                            stroke: {
+                                curve: 'smooth',
+                                width: 3,
+                            },
+                            colors: ["#f1c40f"],
                             tooltip: {
                                 y: {
                                     formatter: (value) => `$ ${value.toFixed(3)}`,
+
                                 }
                             }
                         }} />
@@ -77,4 +78,4 @@ function Chart() {
     );
 }
 
-export default Chart;
+export default ChartLine;
