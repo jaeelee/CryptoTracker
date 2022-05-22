@@ -1,6 +1,7 @@
-<h1 align="center">Welcome to crypto-tracker 👋</h1>
-<div align="center">
 
+<h1 align="center">crypto-tracker</h1>
+
+<div align="center">
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-0.1.0-blue.svg?cacheSeconds=2592000" />
 </p>
